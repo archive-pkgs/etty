@@ -26,6 +26,7 @@ var helpers = {
 	trim: function (str) {
 		return str.replace(this.wp_regex, '');
 	}
+
 }
 
 module.exports = helpers;
