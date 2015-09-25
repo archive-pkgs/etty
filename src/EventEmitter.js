@@ -8,7 +8,7 @@ var EventEmitter = function (config) {
 		useCapture: config.useCapture || false,
 		root: config.root || window,
 		maxListeners: config.maxListeners || 10
-	}
+	};
 };
 
 EventEmitter.prototype.on = function(evt, handler) {
@@ -52,7 +52,7 @@ EventEmitter.prototype.setMaxListeners = function (num) {
 }
 
 EventEmitter.prototype.removeListener = function (evt, handler) {
-	this.config.root.removeEventListener(evt, handler, this.config.useCapture)
+	this.config.root.removeEventListener(evt, handler, this.config.useCapture);
 };
 
 EventEmitter.prototype.removeAllListeners = function (evt) {
