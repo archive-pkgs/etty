@@ -12,24 +12,24 @@ var EventEmitter = function (config) {
 };
 
 EventEmitter.prototype.on = function(evt, handler) {
- 	var customEvt = new Event(evt);
+	var customEvt = new Event(evt);
 
-  this.config.root.addEventListener(evt, function (e) {
-  	handler(e);
-  }, this.config.useCapture);
-  var evts = this.evtHash;
-  if (!evts.hasOwnProperty(evt)) {
-  	evts[evt] = {
-  		evt: customEvt,
-  		handlers: [handler]
-  	};
-  } else {
-  	(evts[evt].handlers.length < this.config.maxListeners)
-  		? evts[evt].handlers.push(handler)
-  		: null;
-  }
+	this.config.root.addEventListener(evt, function (e) {
+		handler(e);
+	}, this.config.useCapture);
+	var evts = this.evtHash;
+	if (!evts.hasOwnProperty(evt)) {
+		evts[evt] = {
+			evt: customEvt,
+			handlers: [handler]
+		};
+	} else {
+		(evts[evt].handlers.length < this.config.maxListeners)
+			? evts[evt].handlers.push(handler)
+			: null;
+	}
 
-  return this;
+	return this;
 };
 
 EventEmitter.prototype.emit = function (evt) {
@@ -42,7 +42,7 @@ EventEmitter.prototype.emit = function (evt) {
 };
 
 EventEmitter.prototype.getMaxListeners = function () {
- 	return this.config.maxListeners;
+	return this.config.maxListeners;
 };
 
 EventEmitter.prototype.setMaxListeners = function (num) {
