@@ -1,37 +1,40 @@
-var helpers = require('./EventEmitter.helpers.js');
+'use strict';
+
+var helpers = require('./EventEmitter.helpers');
 
 var EventEmitter = function (config) {
 	config = config || {};
 	if (!helpers.checkObj(config)) throw new TypeError('Should be an object');
 	this.evtHash= {};
 	this.config = {
-		useCapture: config.useCapture || false,
-		root: config.root || window,
-		maxListeners: config.maxListeners || 10
+		maxListeners: config.maxListeners || 10,
+		handlersDelay: config.handlersDelay || 0
 	};
 };
 
 EventEmitter.prototype.on = function(evt, handler) {
 	var customEvt = new Event(evt);
+	var self = this;
+	var evts = self.evtHash;
+	var config = self.config;
 
-	this.config.root.addEventListener(evt, function (e) {
-		handler(e);
-	}, this.config.useCapture);
-
-	var evts = this.evtHash;
 	if (!evts.hasOwnProperty(evt)) {
 		evts[evt] = {
 			evt: customEvt,
 			handlers: [handler]
 		};
 	} else {
-		(evts[evt].handlers.length < this.config.maxListeners)
-			? evts[evt].handlers.push(handler)
-			: null;
+		if (evts[evt].handlers.length < config.maxListeners) {
+			evts[evt].handlers.push(handler);
+		} else {
+			throw new Error('Can not add more than ' + config.maxListeners + ' handlers');
+		}
 	}
 
 	return this;
 };
+
+EventEmitter.prototype.addListener = EventEmitter.prototype.on;
 
 EventEmitter.prototype.once = function(evt, handler) {
 	var customEvt = new Event(evt);
@@ -39,14 +42,9 @@ EventEmitter.prototype.once = function(evt, handler) {
 	var config = self.config;
 	var evtHash = self.evtHash;
 
-	var listener = function (e) {
-		handler(e);
-		self.removeListener(evt, listener);
-		delete self.evtHash[evt];
-	};
-
-	config.root.addEventListener(evt, listener, config.useCapture);
-
+	var listener = function () {
+		handler();
+	}
 	if (!evtHash.hasOwnProperty(evt)) {
 		evtHash[evt] = {
 			evt: customEvt,
@@ -60,7 +58,7 @@ EventEmitter.prototype.once = function(evt, handler) {
 EventEmitter.prototype.emit = function (evt) {
 	var evts = this.evtHash;
 	if (evts.hasOwnProperty(evt)) {
-		this.config.root.dispatchEvent(evts[evt].evt);
+
 	} else {
 		throw new Error('There is now such event handler');
 	}
@@ -92,7 +90,7 @@ EventEmitter.prototype.removeAllListeners = function (evt) {
 		root.removeEventListener(evt, evtObj.handlers[i], capture);  //use already defined method
 	}
 
-	delete evtObj;
+	delete this.evtHash[evt];
 };
 
 EventEmitter.prototype.listenerCount = function (evt) {
@@ -115,5 +113,3 @@ if (typeof module !== 'undefined' && module.exports) {
 } else {
 	window.EventEmitter = EventEmitter;
 }
-
-window.EventEmitter = EventEmitter;
