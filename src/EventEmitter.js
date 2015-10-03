@@ -188,5 +188,3 @@ if (typeof module !== 'undefined' && module.exports) {
 } else {
 	window.EventEmitter = EventEmitter;
 }
-
-window.EventEmitter = EventEmitter;
