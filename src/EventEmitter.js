@@ -3,8 +3,8 @@
 var helpers = require('./EventEmitter.helpers');
 
 /**
- * [EventEmitter description]
- * @param {[type]} config [description]
+ * Constructor function for our class
+ * @param {Object} config Config object
  */
 var EventEmitter = function (config) {
 	if (this instanceof EventEmitter) {
@@ -22,10 +22,10 @@ var EventEmitter = function (config) {
 
 
 /**
- *
- * @param  {[type]} evt     [description]
- * @param  {[type]} handler [description]
- * @return {[type]}         [description]
+ * Add event listener to event
+ * @param  {String} evt     event name
+ * @param  {Function} handler
+ * @return {Object}  EventEmitter object
  */
 EventEmitter.prototype.on = function(evt, handler) {
 	var self = this;
@@ -35,46 +35,52 @@ EventEmitter.prototype.on = function(evt, handler) {
 	if (!evts.hasOwnProperty(evt)) {
 		evts[evt] = [handler];
 	} else {
-		if (evts[evt].handlers.length < config.maxListeners) {
+		if (evts[evt].length < config.maxListeners) {
 			evts[evt].push(handler);
 		} else {
 			throw new Error('Can not add more than ' + config.maxListeners + ' handlers');
 		}
 	}
 
-	return this;
+	return self;
 };
 
+
+// human hack
 EventEmitter.prototype.addListener = EventEmitter.prototype.on;
 
 
 /**
- * [once description]
- * @param  {[type]} evt     [description]
- * @param  {[type]} handler [description]
- * @return {[type]}         [description]
+ * Add event that only can be executable once
+ * @param  {String} evt     event name
+ * @param  {Function} handler
+ * @return {Object}   EventEmitter object
  */
 EventEmitter.prototype.once = function(evt, handler) {
-	var customEvt = new Event(evt);
 	var self = this;
 	var config = self.config;
 	var evtHash = self.evtHash;
 
+	var listener = function (args) {
+		args = ([]).slice.call(args);
+		handler(args);
+		self.removeListener(evt, listener);
+	};
+
 	if (!helpers.hasProperty(evtHash, evt)) {
-		evtHash[evt] = {
-			evt: customEvt,
-			handlers: [handler]
-		};
+		evtHash[evt] = [listener]
 	} else {
-		evtHash[evt].handlers.push(handler);
+		evtHash[evt].push(listener);
 	}
+
+	return self;
 };
 
 
 /**
- * [emit description]
- * @param  {[type]} evt [description]
- * @return {[type]}     [description]
+ * Emit an event
+ * @param  {String} evt
+ * @return {Object} EventEmitter object
  */
 EventEmitter.prototype.emit = function (evt) {
 	var args = ([]).slice.call(arguments, 1);
@@ -86,12 +92,14 @@ EventEmitter.prototype.emit = function (evt) {
 	} else {
 		throw new Error('There is now such event handler');
 	}
+
+	return this;
 };
 
 
 /**
- * [getMaxListeners description]
- * @return {[type]} [description]
+ * Return max listeners for single event length
+ * @return {Int}
  */
 EventEmitter.prototype.getMaxListeners = function () {
 	return this.config.maxListeners;
@@ -99,55 +107,56 @@ EventEmitter.prototype.getMaxListeners = function () {
 
 
 /**
- * [setMaxListeners description]
- * @param {[type]} num [description]
+ * @param {Int} num
  */
 EventEmitter.prototype.setMaxListeners = function (num) {
 	if (typeof num === 'number' && num) {
 		this.config.maxListeners = num;
 	}
+
+	return this;
 };
 
 
 /**
- * [removeListener description]
- * @param  {[type]} evt     [description]
- * @param  {[type]} handler [description]
- * @return {[type]}         [description]
+ * Remove event listener from an event
+ * @param  {String} evt
+ * @param  {Function} handler
+ * @return {Object}  EventEmitter object
  */
 EventEmitter.prototype.removeListener = function (evt, handler) {
 	var allEvts = this.evtHash;
 	if (helpers.hasProperty(allEvts, evt)) {
 		var index = allEvts[evt].indexOf(handler);
 		if (index < 0) return;
-		return allEvts[evt].splice(index, 1);
+		allEvts[evt].splice(index, 1);
 	}
+
+	return this;
 };
 
 
 /**
- * [removeAllListeners description]
- * @param  {[type]} evt [description]
- * @return {[type]}     [description]
+ * Remove all listeners from an event
+ * @param  {String} evt
+ * @return {Object} 		 EventEmitter object
  */
 EventEmitter.prototype.removeAllListeners = function (evt) {
-	var evtObj = this.evtHash[evt];
-	var len = evtObj.handlers.length;
-	var root = this.root;
-	var capture = this.config.useCapture, i;
+	var allEvents = this.evtHash;
 
-	for (	i = 0; i < allHandlers.length; i++ ) {
-		root.removeEventListener(evt, evtObj.handlers[i], capture);  //use already defined method
+	if (helpers.hasProperty(allEvents, evt) && !!allEvents[evt].length) {
+		this.evtHash[evt] = [];
+		return this;
 	}
 
-	delete this.evtHash[evt];
+	return;
 };
 
 
 /**
- * [listenerCount description]
- * @param  {[type]} evt [description]
- * @return {[type]}     [description]
+ * Get listers count for an event
+ * @param  {String} evt
+ * @return {Int}     length of all Events;
  */
 EventEmitter.prototype.listenerCount = function (evt) {
 	var allEvts = this.evtHash;
@@ -160,19 +169,24 @@ EventEmitter.prototype.listenerCount = function (evt) {
 
 
 /**
- * [listeners description]
- * @param  {[type]} evt [description]
- * @return {[type]}     [description]
+ * Get listeners as an array
+ * @param  {String} evt event name
+ * @return {Array}     array of listeners
  */
 EventEmitter.prototype.listeners = function (evt) {
 	var evts = this.evtHash;
 	if (helpers.hasProperty(evts, evt)) {
-		return allEvents[evt];
+		return evts[evt];
+	} else {
+		throw new Error('There is no such event');
 	}
 };
+
 
 if (typeof module !== 'undefined' && module.exports) {
 	module.exports = EventEmitter;
 } else {
 	window.EventEmitter = EventEmitter;
 }
+
+window.EventEmitter = EventEmitter;
