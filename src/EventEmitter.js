@@ -62,7 +62,6 @@ EventEmitter.prototype.once = function(evt, handler) {
 	var evtHash = self.evtHash;
 
 	var listener = function (args) {
-		args = ([]).slice.call(args);
 		handler(args);
 		self.removeListener(evt, listener);
 	};
@@ -82,8 +81,9 @@ EventEmitter.prototype.once = function(evt, handler) {
  * @param  {String} evt
  * @return {Object} EventEmitter object
  */
-EventEmitter.prototype.emit = function (evt) {
-	var args = ([]).slice.call(arguments, 1);
+EventEmitter.prototype.emit = function (evt, args) {
+	if (args && !helpers.checkObj(args)) throw new TypeError('Should be an object');
+	args = args || {};
 	var evts = this.evtHash;
 	if (helpers.hasProperty(evts, evt)) {
 		evts[evt].forEach(function (handler) {
