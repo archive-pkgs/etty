@@ -4,8 +4,10 @@
   "description": "event emitter for browser",
   "main": "EventEmitter.js",
   "scripts": {
+    "test": "mocha",
+    "cov": "istanbul cover ./node_modules/mocha/bin/_mocha"
   },
-  "author": "",
+  "author": "Oleh",
   "license": "MIT",
   "devDependencies": {
     "chai": "^3.3.0",

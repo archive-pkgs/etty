@@ -3,8 +3,8 @@
 var helpers = require('./EventEmitter.helpers');
 
 /**
- * Constructor function for our class
- * @param {Object} config Config object
+ * @constructor
+ * @param {Object} config object
  */
 var EventEmitter = function (config) {
 	if (this instanceof EventEmitter) {
@@ -22,7 +22,7 @@ var EventEmitter = function (config) {
 
 
 /**
- * Add event listener to event
+ * Add event listener
  * @param  {String} evt     event name
  * @param  {Function} handler
  * @return {Object}  EventEmitter object
@@ -62,7 +62,6 @@ EventEmitter.prototype.once = function(evt, handler) {
 	var evtHash = self.evtHash;
 
 	var listener = function (args) {
-		args = ([]).slice.call(args);
 		handler(args);
 		self.removeListener(evt, listener);
 	};
@@ -82,8 +81,9 @@ EventEmitter.prototype.once = function(evt, handler) {
  * @param  {String} evt
  * @return {Object} EventEmitter object
  */
-EventEmitter.prototype.emit = function (evt) {
-	var args = ([]).slice.call(arguments, 1);
+EventEmitter.prototype.emit = function (evt, args) {
+	if (args && !helpers.checkObj(args)) throw new TypeError('Should be an object');
+	args = args || {};
 	var evts = this.evtHash;
 	if (helpers.hasProperty(evts, evt)) {
 		evts[evt].forEach(function (handler) {
@@ -145,7 +145,7 @@ EventEmitter.prototype.removeAllListeners = function (evt) {
 	var allEvents = this.evtHash;
 
 	if (helpers.hasProperty(allEvents, evt) && !!allEvents[evt].length) {
-		this.evtHash[evt] = [];
+		this.evtHash[evt].length = 0;
 		return this;
 	}
 

@@ -24,9 +24,7 @@ describe('EventEmitter test case', function () {
 	it('Should add events', function (done) {
 		expect( function () { em.listeners('test:event') } ).to.throw('There is no such event');
 		em.on('test:evt', function (args) {});
-
 		var listeners = em.listeners('test:evt');
-
 		expect(listeners).to.be.a('array');
 		assert.strictEqual(listeners.length, 1);
 
@@ -54,6 +52,33 @@ describe('EventEmitter test case', function () {
 		em.on('test:evt:3', handler2);
 		em.removeAllListeners('test:evt:3');
 		assert.strictEqual(!!em.listenerCount('test:evt:3'), false);
+		done();
+	});
+
+	it('Should correctly emit event', function (done) {
+		var test = false;
+		em.on('test:for:emit', function (args) {
+			test = true;
+		});
+
+		expect(function () { em.emit('wrong', 'name'); }).to.throw('There is now such event handler');
+
+		em.emit('test:for:emit', 'test1');
+		assert.strictEqual(test, true, 'emit should correctly work');
+		done();
+	});
+
+	it('Once should correctly work', function (done) {
+		var test = false;
+		em.once('once:evt', function (args) {
+			test = true;
+		});
+		em.emit('once:evt', 'something');
+		assert.strictEqual(test, true, 'once should work firstly');
+		test = false;
+		em.emit('once:evt', 'data');
+		assert.strictEqual(test, false, 'once should not work after first exec');
+
 		done();
 	});
 });
