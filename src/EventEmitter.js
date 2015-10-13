@@ -3,8 +3,8 @@
 var helpers = require('./EventEmitter.helpers');
 
 /**
- * Constructor function for our class
- * @param {Object} config Config object
+ * @constructor
+ * @param {Object} config object
  */
 var EventEmitter = function (config) {
 	if (this instanceof EventEmitter) {
@@ -22,7 +22,7 @@ var EventEmitter = function (config) {
 
 
 /**
- * Add event listener to event
+ * Add event listener
  * @param  {String} evt     event name
  * @param  {Function} handler
  * @return {Object}  EventEmitter object
@@ -145,7 +145,7 @@ EventEmitter.prototype.removeAllListeners = function (evt) {
 	var allEvents = this.evtHash;
 
 	if (helpers.hasProperty(allEvents, evt) && !!allEvents[evt].length) {
-		this.evtHash[evt] = [];
+		this.evtHash[evt].length = 0;
 		return this;
 	}
 

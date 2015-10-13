@@ -15,24 +15,6 @@ module.exports = {
 
 
 	/**
-	 * hasOwnProperty for more than one arguments
-	 * @param  {Object}  obj
-	 * @return {Boolean}
-	 */
-	hasProperties: function (obj, props) {
-		if (!this.checkObj) { throw new TypeError('Should be an Object') }
-		if (props === undefined) { throw new Error('At least one prop should be defined') }
-		props = ([]).slice.call(arguments, 1);
-		var ownProps = ({}).getOwnProperties.call(obj);
-		return props.reduce(function (acc, i) {
-			if ( ownProps.indexOf(props[i]) < 0 ) {
-				acc = false;
-			}
-		}, true);
-	},
-
-
-	/**
 	 * Whitespace trim helper
 	 * @param  {String} str
 	 * @return {String} new str with trimed whitespaces
