@@ -31,6 +31,16 @@ describe('EventEmitter test case', function () {
 		done();
 	});
 
+	it('addListener should have same behaviour as on', function (done) {
+		expect( function () { em.listeners('test:event') } ).to.throw('There is no such event');
+		em.addListener('test:new:evt', function (args) {});
+		var listeners = em.listeners('test:evt');
+		expect(listeners).to.be.a('array');
+		assert.strictEqual(listeners.length, 1);
+
+		done();
+	});
+
 	it('Should return correct length of listeners for event', function (done) {
 		assert.strictEqual(em.listenerCount('test:evt'), 1, 'listenerCount should return correct value');
 		done();
@@ -61,9 +71,9 @@ describe('EventEmitter test case', function () {
 			test = true;
 		});
 
-		expect(function () { em.emit('wrong', 'name'); }).to.throw('There is now such event handler');
+		expect(function () { em.emit('wrong'); }).to.throw('There is now such event handler');
 
-		em.emit('test:for:emit', 'test1');
+		em.emit('test:for:emit');
 		assert.strictEqual(test, true, 'emit should correctly work');
 		done();
 	});
@@ -73,10 +83,10 @@ describe('EventEmitter test case', function () {
 		em.once('once:evt', function (args) {
 			test = true;
 		});
-		em.emit('once:evt', 'something');
+		em.emit('once:evt', { message: 'Hello' });
 		assert.strictEqual(test, true, 'once should work firstly');
 		test = false;
-		em.emit('once:evt', 'data');
+		em.emit('once:evt');
 		assert.strictEqual(test, false, 'once should not work after first exec');
 
 		done();

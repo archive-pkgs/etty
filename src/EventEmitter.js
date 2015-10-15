@@ -182,7 +182,6 @@ EventEmitter.prototype.listeners = function (evt) {
 	}
 };
 
-
 if (typeof module !== 'undefined' && module.exports) {
 	module.exports = EventEmitter;
 } else {
