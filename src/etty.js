@@ -1,22 +1,21 @@
 'use strict';
 
-var helpers = require('./EventEmitter.helpers');
+var utils = require('./etty.util');
 
 /**
  * @constructor
  * @param {Object} config object
  */
-var EventEmitter = function (config) {
-	if (this instanceof EventEmitter) {
+function Etty (config) {
+	if (this instanceof Etty) {
 		config = config || {};
-		if (!helpers.checkObj(config)) throw new TypeError('Should be an object');
-		this.evtHash= {};
+		if (!utils.checkObj(config)) throw new TypeError('Should be an object');
+		this.evtHash = {};
 		this.config = {
-			maxListeners: config.maxListeners || 10,
-			handlersDelay: config.handlersDelay || 0
+			maxListeners: config.maxListeners || 10
 		};
 	} else {
-		return new EventEmitter(config);
+		return new Etty(config);
 	}
 };
 
@@ -25,9 +24,9 @@ var EventEmitter = function (config) {
  * Add event listener
  * @param  {String} evt     event name
  * @param  {Function} handler
- * @return {Object}  EventEmitter object
+ * @return {Object}  Etty object
  */
-EventEmitter.prototype.on = function(evt, handler) {
+Etty.prototype.on = function(evt, handler) {
 	var self = this;
 	var evts = self.evtHash;
 	var config = self.config;
@@ -47,18 +46,17 @@ EventEmitter.prototype.on = function(evt, handler) {
 
 
 // human hack
-EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+Etty.prototype.addListener = Etty.prototype.on;
 
 
 /**
  * Add event that only can be executable once
  * @param  {String} evt     event name
  * @param  {Function} handler
- * @return {Object}   EventEmitter object
+ * @return {Object}   Etty object
  */
-EventEmitter.prototype.once = function(evt, handler) {
+Etty.prototype.once = function(evt, handler) {
 	var self = this;
-	var config = self.config;
 	var evtHash = self.evtHash;
 
 	var listener = function (args) {
@@ -66,7 +64,7 @@ EventEmitter.prototype.once = function(evt, handler) {
 		self.removeListener(evt, listener);
 	};
 
-	if (!helpers.hasProperty(evtHash, evt)) {
+	if (!utils.hasProperty(evtHash, evt)) {
 		evtHash[evt] = [listener]
 	} else {
 		evtHash[evt].push(listener);
@@ -79,13 +77,13 @@ EventEmitter.prototype.once = function(evt, handler) {
 /**
  * Emit an event
  * @param  {String} evt
- * @return {Object} EventEmitter object
+ * @return {Object} Etty object
  */
-EventEmitter.prototype.emit = function (evt, args) {
-	if (args && !helpers.checkObj(args)) throw new TypeError('Should be an object');
+Etty.prototype.emit = function (evt, args) {
+	if (args && !utils.checkObj(args)) throw new TypeError('Should be an object');
 	args = args || {};
 	var evts = this.evtHash;
-	if (helpers.hasProperty(evts, evt)) {
+	if (utils.hasProperty(evts, evt)) {
 		evts[evt].forEach(function (handler) {
 			handler(args);
 		});
@@ -101,7 +99,7 @@ EventEmitter.prototype.emit = function (evt, args) {
  * Return max listeners for single event length
  * @return {Int}
  */
-EventEmitter.prototype.getMaxListeners = function () {
+Etty.prototype.getMaxListeners = function () {
 	return this.config.maxListeners;
 };
 
@@ -109,7 +107,7 @@ EventEmitter.prototype.getMaxListeners = function () {
 /**
  * @param {Int} num
  */
-EventEmitter.prototype.setMaxListeners = function (num) {
+Etty.prototype.setMaxListeners = function (num) {
 	if (typeof num === 'number' && num) {
 		this.config.maxListeners = num;
 	}
@@ -122,11 +120,11 @@ EventEmitter.prototype.setMaxListeners = function (num) {
  * Remove event listener from an event
  * @param  {String} evt
  * @param  {Function} handler
- * @return {Object}  EventEmitter object
+ * @return {Object}  Etty object
  */
-EventEmitter.prototype.removeListener = function (evt, handler) {
+Etty.prototype.removeListener = function (evt, handler) {
 	var allEvts = this.evtHash;
-	if (helpers.hasProperty(allEvts, evt)) {
+	if (utils.hasProperty(allEvts, evt)) {
 		var index = allEvts[evt].indexOf(handler);
 		if (index < 0) return;
 		allEvts[evt].splice(index, 1);
@@ -139,12 +137,12 @@ EventEmitter.prototype.removeListener = function (evt, handler) {
 /**
  * Remove all listeners from an event
  * @param  {String} evt
- * @return {Object} 		 EventEmitter object
+ * @return {Object} 		 Etty object
  */
-EventEmitter.prototype.removeAllListeners = function (evt) {
+Etty.prototype.removeAllListeners = function (evt) {
 	var allEvents = this.evtHash;
 
-	if (helpers.hasProperty(allEvents, evt) && !!allEvents[evt].length) {
+	if (utils.hasProperty(allEvents, evt) && !!allEvents[evt].length) {
 		this.evtHash[evt].length = 0;
 		return this;
 	}
@@ -158,9 +156,9 @@ EventEmitter.prototype.removeAllListeners = function (evt) {
  * @param  {String} evt
  * @return {Int}     length of all Events;
  */
-EventEmitter.prototype.listenerCount = function (evt) {
+Etty.prototype.listenerCount = function (evt) {
 	var allEvts = this.evtHash;
-	if (helpers.hasProperty(allEvts, evt)) {
+	if (utils.hasProperty(allEvts, evt)) {
 		return allEvts[evt].length;
 	} else {
 		throw new Error('There is no such event');
@@ -173,9 +171,9 @@ EventEmitter.prototype.listenerCount = function (evt) {
  * @param  {String} evt event name
  * @return {Array}     array of listeners
  */
-EventEmitter.prototype.listeners = function (evt) {
+Etty.prototype.listeners = function (evt) {
 	var evts = this.evtHash;
-	if (helpers.hasProperty(evts, evt)) {
+	if (utils.hasProperty(evts, evt)) {
 		return evts[evt];
 	} else {
 		throw new Error('There is no such event');
@@ -183,7 +181,7 @@ EventEmitter.prototype.listeners = function (evt) {
 };
 
 if (typeof module !== 'undefined' && module.exports) {
-	module.exports = EventEmitter;
+	module.exports = Etty;
 } else {
-	window.EventEmitter = EventEmitter;
+	window.Etty = Etty;
 }

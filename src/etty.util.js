@@ -3,7 +3,7 @@
 module.exports = {
 
 	/**
-	 * hasOwnProperty helper for more secure work
+	 * hasOwnProperty util for more secure work
 	 * @param  {Object}  obj
 	 * @param  {String}  prop
 	 * @return {Boolean}
@@ -15,7 +15,7 @@ module.exports = {
 
 
 	/**
-	 * Whitespace trim helper
+	 * Whitespace trim util
 	 * @param  {String} str
 	 * @return {String} new str with trimed whitespaces
 	*/

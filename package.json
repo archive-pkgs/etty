@@ -1,16 +1,19 @@
 {
-  "name": "event-emitter",
+  "name": "etty",
   "version": "1.0.0",
-  "description": "event emitter for browser",
-  "main": "EventEmitter.js",
+  "description": "event emmiting system for client-side",
+  "main": "src/etty.js",
   "scripts": {
     "test": "mocha",
     "cov": "istanbul cover ./node_modules/mocha/bin/_mocha"
   },
-  "author": "Oleh",
+  "author": "Oleh Kuchuk",
   "license": "MIT",
   "devDependencies": {
+    "babel-core": "^5.8.25",
+    "babel-loader": "^5.3.2",
     "chai": "^3.3.0",
-    "mocha": "^2.3.3"
+    "mocha": "^2.3.3",
+    "webpack": "^1.12.2"
   }
 }

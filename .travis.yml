@@ -4,4 +4,4 @@ before_install:
   -  npm install mocha chai
 script: mocha
 node_js:
-  - '0.12'
+  - 'stable'

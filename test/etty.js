@@ -1,19 +1,19 @@
 var assert = require('chai').assert;
 var expect = require('chai').expect;
-var EventEmitter = require('../src/EventEmitter');
+var Etty = require('../src/etty');
 
-describe('EventEmitter test case', function () {
-	var em = new EventEmitter();
-	var em2 = EventEmitter();
+describe('Etty test case', function () {
+	var em = new Etty();
+	var em2 = Etty();
 
 	it('should create correct EventEmmiter instance', function (done) {
-		assert.strictEqual(em instanceof EventEmitter, true, 'Should be an instanceof EventEmitter');
-		assert.strictEqual(em2 instanceof EventEmitter, true, 'Also should be instance even without new');
+		assert.strictEqual(em instanceof Etty, true, 'Should be an instanceof Etty');
+		assert.strictEqual(em2 instanceof Etty, true, 'Also should be instance even without new');
 		done();
 	});
 
 	it('Should return correct max listeners length', function (done) {
-		assert.strictEqual(em.getMaxListeners(), 10, 'default value fo event emitter should be correct');
+		assert.strictEqual(em.getMaxListeners(), 10, 'default value fo etty should be correct');
 		em.setMaxListeners(5);
 		assert.strictEqual(em.getMaxListeners(), 5, 'Should allow user to change def value');
 		em.setMaxListeners('bad value');
