@@ -1,2 +1,2 @@
-## EventEmitter
-> EventEmitter implementation for browser
+## etty
+> Event emitter implementation for browser
